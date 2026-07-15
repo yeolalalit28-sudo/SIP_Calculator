@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SIP Calculator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+    <style>
+        /* ====== App.css (fully preserved) ====== */
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        .App {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #e0f2fe 0%, #e0e7ff 50%, #fae8ff 100%);
+            font-family: 'Inter', sans-serif;
+        }
+
+        .hero-section {
+            background: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 50%, #8b5cf6 100%);
+            padding: 3rem 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            opacity: 0.3;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+        }
+
+        .hero-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 3rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        @media (min-width: 768px) {
+            .hero-title {
+                font-size: 4rem;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .hero-title {
+                font-size: 4.5rem;
+            }
+        }
+
+        .hero-subtitle {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.95);
+            font-weight: 400;
+        }
+
+        @media (min-width: 768px) {
+            .hero-subtitle {
+                font-size: 1.125rem;
+            }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        .main-content {
+            padding: 3rem 0;
+            margin-top: -2rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .grid-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        @media (min-width: 1024px) {
+            .grid-layout {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .funds-section,
+        .results-section {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .fund-card,
+        .input-card,
+        .result-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            padding: 1.5rem;
+        }
+
+        .card-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .fund-tab {
+            font-weight: 500;
+            padding: 0.75rem 1rem;
+            border-radius: 10px;
+            background: #f1f5f9;
+            color: #1e293b;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+            font-family: 'Inter', sans-serif;
+            border: none;
+            cursor: pointer;
+        }
+
+        .fund-tab:hover {
+            background: #e2e8f0;
+        }
+
+        .fund-tab[data-state="active"] {
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            color: white;
+        }
+
+        .fund-tabs-wrap {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 14px;
+        }
+
+        .fund-details {
+            padding: 1rem 0;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .fund-return,
+        .fund-risk {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 100%);
+            border-radius: 12px;
+        }
+
+        .fund-return .icon,
+        .fund-risk .icon {
+            font-size: 1.5rem;
+            color: #3b82f6;
+            width: 28px;
+            text-align: center;
+        }
+
+        .label {
+            font-size: 0.875rem;
+            color: #64748b;
+            font-weight: 400;
+        }
+
+        .value {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-top: 0.25rem;
+        }
+
+        .fund-description {
+            font-size: 0.9rem;
+            color: #475569;
+            line-height: 1.6;
+            margin-top: 0.5rem;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .input-label {
+            font-weight: 500;
+            color: #334155;
+            font-size: 0.95rem;
+        }
+
+        .input-with-currency {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .currency-symbol {
+            position: absolute;
+            left: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #64748b;
+            z-index: 1;
+        }
+
+        .currency-input {
+            padding-left: 2rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            height: 48px;
+            width: 100%;
+            background: white;
+            color: #1e293b;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .currency-input:focus {
+            border-color: #3b82f6;
+            outline: none;
+        }
+
+        .styled-input {
+            font-size: 1.1rem;
+            font-weight: 600;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            height: 48px;
+            padding: 0 1rem;
+            width: 100%;
+            background: white;
+            color: #1e293b;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .styled-input:focus {
+            border-color: #3b82f6;
+            outline: none;
+        }
+
+        .btn-calculate {
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            color: white;
+            border: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: opacity 0.2s ease;
+            font-family: 'Inter', sans-serif;
+            border-radius: 10px;
+            height: 48px;
+            width: 100%;
+            padding: 0 1rem;
+        }
+
+        .btn-calculate:hover:not(:disabled) {
+            opacity: 0.9;
+        }
+
+        .btn-calculate:disabled {
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .main-result {
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            color: white;
+        }
+
+        .main-result .card-title {
+            color: white;
+            font-size: 1.125rem;
+        }
+
+        .maturity-value {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin: 1rem 0 1.5rem 0;
+            text-align: center;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .result-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .result-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 1rem;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+        }
+
+        .result-icon {
+            font-size: 1.25rem;
+            flex-shrink: 0;
+            width: 24px;
+            text-align: center;
+        }
+
+        .result-icon.invested {
+            color: #fbbf24;
+        }
+
+        .result-icon.returns {
+            color: #10b981;
+        }
+
+        .result-label {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 400;
+        }
+
+        .main-result .result-amount {
+            font-size: 1rem;
+            font-weight: 700;
+            color: white;
+            margin-top: 0.25rem;
+        }
+
+        .inflation-card {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 100%);
+            border: 2px solid #bfdbfe;
+        }
+
+        .inflation-content {
+            display: flex;
+            gap: 1.5rem;
+            align-items: flex-start;
+        }
+
+        .inflation-details {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .yearly-breakdown {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 0.5rem;
+        }
+
+        .yearly-breakdown::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .yearly-breakdown::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 10px;
+        }
+
+        .yearly-breakdown::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        .yearly-breakdown::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        .year-item {
+            padding: 1rem;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .year-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .year-number {
+            font-weight: 600;
+            color: #1e293b;
+            font-size: 0.95rem;
+        }
+
+        .year-value {
+            font-weight: 700;
+            color: #3b82f6;
+            font-size: 1.1rem;
+        }
+
+        .year-details {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+
+        .detail-text {
+            font-weight: 400;
+        }
+
+        .text-muted {
+            color: #64748b;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .text-error {
+            color: #ef4444;
+            font-weight: 600;
+        }
+
+        .text-white-90 {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .mt-2 {
+            margin-top: 0.5rem;
+        }
+
+        .mt-3 {
+            margin-top: 1rem;
+        }
+
+        .gap-1 {
+            gap: 0.5rem;
+        }
+
+        .flex-col {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .flex-col>*+* {
+            margin-top: 1rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero-section {
+                padding: 2rem 1rem;
+            }
+
+            .main-content {
+                padding: 2rem 0;
+            }
+
+            .result-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .maturity-value {
+                font-size: 2rem;
+            }
+
+            .inflation-content {
+                flex-direction: column;
+            }
+
+            .fund-card,
+            .input-card,
+            .result-card {
+                padding: 1rem;
+            }
+        }
+
+        /* small extra */
+        .empty-state {
+            color: #64748b;
+            padding-top: 16px;
+        }
+
+        .empty-state-light {
+            color: rgba(255, 255, 255, 0.9);
+            padding-top: 20px;
+        }
+
+        .fund-details-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .inline-code {
+            background: #e2e8f0;
+            padding: 0.1rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="root" class="App">
+        <!-- ====== Header ====== -->
+        <header class="hero-section">
+            <div class="container hero-content">
+                <h1 class="hero-title">SIP Calculator</h1>
+                <p class="hero-subtitle">
+                    Estimate your SIP maturity with inflation adjustment &amp; year-wise breakdown.
+                </p>
+            </div>
+        </header>
+
+        <!-- ====== Main ====== -->
+        <main class="container main-content">
+            <div class="grid-layout">
+
+                <!-- ====== LEFT COLUMN ====== -->
+                <section class="funds-section">
+
+                    <!-- Fund Selection -->
+                    <div class="fund-card input-card">
+                        <div class="card-title">Select Fund Type</div>
+
+                        <div class="fund-tabs-wrap" id="fundTabsWrap">
+                            <!-- rendered by JS -->
+                        </div>
+
+                        <div id="fundDetailsContainer" class="fund-details">
+                            <!-- rendered by JS -->
+                        </div>
+                    </div>
+
+                    <!-- SIP Inputs -->
+                    <div class="input-card">
+                        <div class="card-title">Your SIP Inputs</div>
+
+                        <div class="fund-details">
+                            <div class="input-group">
+                                <label class="input-label">Monthly Investment</label>
+                                <div class="input-with-currency">
+                                    <span class="currency-symbol">₹</span>
+                                    <input class="currency-input" type="number" min="0" step="100" id="monthlyAmount" value="5000" />
+                                </div>
+                            </div>
+
+                            <div class="input-group">
+                                <label class="input-label">SIP Period (Years)</label>
+                                <input class="styled-input" type="number" min="0" step="1" id="periodYears" value="10" />
+                            </div>
+
+                            <div class="input-group">
+                                <label class="input-label">Expected Return (%)</label>
+                                <input class="styled-input" type="number" min="0" step="0.1" id="expectedReturn" value="12" />
+                            </div>
+
+                            <div class="input-group">
+                                <label class="input-label">Inflation Rate (%)</label>
+                                <input class="styled-input" type="number" min="0" step="0.1" id="inflationRate" value="6" />
+                            </div>
+
+                            <div class="input-group">
+                                <label class="input-label">Step-Up % (Increase Annually)</label>
+                                <input class="styled-input" type="number" min="0" step="0.1" id="stepUpPercent" value="0" />
+                            </div>
+
+                            <div id="calcError" class="text-error" style="display:none;"></div>
+
+                            <button class="btn-calculate" id="calculateBtn">Calculate</button>
+
+                            <div class="text-muted">
+                                Backend: <span class="inline-code">(local calculation)</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ====== RIGHT COLUMN ====== -->
+                <section class="results-section">
+
+                    <!-- Projected Maturity -->
+                    <div class="result-card main-result">
+                        <div class="card-title">Projected Maturity</div>
+
+                        <div id="maturityResult">
+                            <div class="empty-state-light">Enter inputs and click <b>Calculate</b>.</div>
+                        </div>
+                    </div>
+
+                    <!-- Yearly Breakdown -->
+                    <div class="inflation-card result-card">
+                        <div class="card-title">Yearly Breakdown</div>
+                        <div id="yearlyBreakdownContainer">
+                            <div class="empty-state">No data yet.</div>
+                        </div>
+                    </div>
+
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // ================================================================
+        //  HELPERS (identical to original)
+        // ================================================================
+        function formatINR(num) {
+            const n = Number(num);
+            if (!Number.isFinite(n)) return "₹0";
+            return n.toLocaleString("en-IN", {
+                style: "currency",
+                currency: "INR",
+                maximumFractionDigits: 2,
+            });
+        }
+
+        function formatNumber(num, digits) {
+            digits = digits === undefined ? 2 : digits;
+            const n = Number(num);
+            if (!Number.isFinite(n)) return "0";
+            return n.toLocaleString("en-IN", {
+                maximumFractionDigits: digits,
+            });
+        }
+
+        // ================================================================
+        //  FUND DATA (hardcoded from server.py)
+        // ================================================================
+        const FUNDS = [{
+            name: "Large Cap Fund",
+            type: "large_cap",
+            expected_return: 12.0,
+            risk_level: "Low to Moderate",
+            description: "Invests in top 100 companies by market cap. Stable and relatively lower risk."
+        }, {
+            name: "Mid Cap Fund",
+            type: "mid_cap",
+            expected_return: 14.0,
+            risk_level: "Moderate to High",
+            description: "Invests in companies ranked 101-250 by market cap. Higher growth potential."
+        }, {
+            name: "Small Cap Fund",
+            type: "small_cap",
+            expected_return: 16.0,
+            risk_level: "High",
+            description: "Invests in companies ranked 251+ by market cap. Highest growth potential with higher risk."
+        }, {
+            name: "Flexi Cap Fund",
+            type: "flexi_cap",
+            expected_return: 13.0,
+            risk_level: "Moderate",
+            description: "Invests across all market caps. Balanced approach with flexibility."
+        }];
+
+        // ================================================================
+        //  SIP CALCULATION ENGINE (identical logic from server.py)
+        // ================================================================
+        function calculateSIP(monthlyAmount, periodYears, expectedReturnPercent, inflationRatePercent, stepUpPercent) {
+            // Convert percentages to decimals
+            const expectedReturn = expectedReturnPercent / 100;
+            const inflationRate = inflationRatePercent / 100;
+            const stepUp = stepUpPercent / 100;
+
+            const monthlyRate = expectedReturn / 12;
+            const totalMonths = periodYears * 12;
+
+            let monthlyAmountCurrent = monthlyAmount;
+            let totalInvested = 0;
+            let maturityValue = 0;
+            const yearlyBreakdown = [];
+
+            for (let year = 1; year <= periodYears; year++) {
+                // Step-up applied at beginning of each year (after year 1)
+                if (year > 1) {
+                    monthlyAmountCurrent = monthlyAmountCurrent * (1 + stepUp);
+                }
+
+                let yearInvested = 0;
+
+                for (let month = 0; month < 12; month++) {
+                    totalInvested += monthlyAmountCurrent;
+                    yearInvested += monthlyAmountCurrent;
+                    maturityValue = (maturityValue + monthlyAmountCurrent) * (1 + monthlyRate);
+                }
+
+                const inflationFactor = Math.pow(1 + inflationRate, year);
+                const realValue = maturityValue / inflationFactor;
+
+                yearlyBreakdown.push({
+                    year: year,
+                    invested_amount: Math.round(totalInvested * 100) / 100,
+                    expected_value: Math.round(maturityValue * 100) / 100,
+                    real_value: Math.round(realValue * 100) / 100
+                });
+            }
+
+            const expectedReturns = maturityValue - totalInvested;
+            const inflationAdjustedValue = maturityValue / Math.pow(1 + inflationRate, periodYears);
+            const realReturns = inflationAdjustedValue - totalInvested;
+
+            return {
+                total_invested: Math.round(totalInvested * 100) / 100,
+                expected_returns: Math.round(expectedReturns * 100) / 100,
+                maturity_value: Math.round(maturityValue * 100) / 100,
+                inflation_adjusted_value: Math.round(inflationAdjustedValue * 100) / 100,
+                real_returns: Math.round(realReturns * 100) / 100,
+                yearly_breakdown: yearlyBreakdown
+            };
+        }
+
+        // ================================================================
+        //  DOM REFS & STATE
+        // ================================================================
+        const $ = (id) => document.getElementById(id);
+
+        const monthlyAmountEl = $('monthlyAmount');
+        const periodYearsEl = $('periodYears');
+        const expectedReturnEl = $('expectedReturn');
+        const inflationRateEl = $('inflationRate');
+        const stepUpPercentEl = $('stepUpPercent');
+        const calcErrorEl = $('calcError');
+        const calculateBtn = $('calculateBtn');
+        const maturityResultEl = $('maturityResult');
+        const yearlyBreakdownContainer = $('yearlyBreakdownContainer');
+        const fundTabsWrap = $('fundTabsWrap');
+        const fundDetailsContainer = $('fundDetailsContainer');
+
+        let selectedFundType = 'large_cap';
+        let resultData = null;
+
+        // ================================================================
+        //  RENDER FUND TABS
+        // ================================================================
+        function renderFundTabs() {
+            fundTabsWrap.innerHTML = '';
+            FUNDS.forEach((f) => {
+                const btn = document.createElement('button');
+                btn.className = 'fund-tab';
+                btn.type = 'button';
+                btn.dataset.state = f.type === selectedFundType ? 'active' : 'inactive';
+                btn.textContent = f.name;
+                btn.setAttribute('aria-pressed', f.type === selectedFundType ? 'true' : 'false');
+                btn.addEventListener('click', () => {
+                    selectedFundType = f.type;
+                    // update expected return field
+                    const fund = FUNDS.find((x) => x.type === selectedFundType);
+                    if (fund && typeof fund.expected_return === 'number') {
+                        expectedReturnEl.value = fund.expected_return;
+                    }
+                    renderFundTabs();
+                    renderFundDetails();
+                });
+                fundTabsWrap.appendChild(btn);
+            });
+        }
+
+        // ================================================================
+        //  RENDER FUND DETAILS
+        // ================================================================
+        function renderFundDetails() {
+            const fund = FUNDS.find((f) => f.type === selectedFundType);
+            if (!fund) {
+                fundDetailsContainer.innerHTML = '';
+                return;
+            }
+
+            fundDetailsContainer.innerHTML = `
+                <div class="fund-return">
+                    <span class="icon" aria-hidden="true">⤴</span>
+                    <div>
+                        <div class="label">Expected Return</div>
+                        <div class="value">${formatNumber(fund.expected_return, 2)}%</div>
+                    </div>
+                </div>
+                <div class="fund-risk">
+                    <span class="icon" aria-hidden="true">⚑</span>
+                    <div>
+                        <div class="label">Risk Level</div>
+                        <div class="value" style="font-size:18px;">${fund.risk_level}</div>
+                    </div>
+                </div>
+                <div class="fund-description">${fund.description}</div>
+            `;
+        }
+
+        // ================================================================
+        //  RENDER RESULTS
+        // ================================================================
+        function renderResults(result) {
+            if (!result) {
+                maturityResultEl.innerHTML = `<div class="empty-state-light">Enter inputs and click <b>Calculate</b>.</div>`;
+                yearlyBreakdownContainer.innerHTML = `<div class="empty-state">No data yet.</div>`;
+                return;
+            }
+
+            // Maturity card
+            maturityResultEl.innerHTML = `
+                <div class="maturity-value">${formatINR(result.maturity_value)}</div>
+                <div class="result-grid">
+                    <div class="result-item">
+                        <span class="result-icon invested" aria-hidden="true">●</span>
+                        <div>
+                            <div class="result-label">Total Invested</div>
+                            <div class="result-amount">${formatINR(result.total_invested)}</div>
+                        </div>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-icon returns" aria-hidden="true">▲</span>
+                        <div>
+                            <div class="result-label">Expected Returns</div>
+                            <div class="result-amount">${formatINR(result.expected_returns)}</div>
+                        </div>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-icon" aria-hidden="true">↻</span>
+                        <div>
+                            <div class="result-label">Inflation Adjusted Value</div>
+                            <div class="result-amount">${formatINR(result.inflation_adjusted_value)}</div>
+                        </div>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-icon" aria-hidden="true">◎</span>
+                        <div>
+                            <div class="result-label">Real Returns</div>
+                            <div class="result-amount">${formatINR(result.real_returns)}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Yearly breakdown
+            if (Array.isArray(result.yearly_breakdown) && result.yearly_breakdown.length > 0) {
+                let html = `<div class="yearly-breakdown">`;
+                result.yearly_breakdown.forEach((y) => {
+                    html += `
+                        <div class="year-item">
+                            <div class="year-header">
+                                <div class="year-number">Year ${y.year}</div>
+                                <div class="year-value">${formatINR(y.expected_value)}</div>
+                            </div>
+                            <div class="year-details">
+                                <div>
+                                    <div class="detail-text">Invested: <b>${formatINR(y.invested_amount)}</b></div>
+                                    <div class="detail-text" style="margin-top:4px;">Real (inflation adjusted): <b>${formatINR(y.real_value)}</b></div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                html += `</div>`;
+                yearlyBreakdownContainer.innerHTML = html;
+            } else {
+                yearlyBreakdownContainer.innerHTML = `<div class="empty-state">No breakdown data.</div>`;
+            }
+        }
+
+        // ================================================================
+        //  CALCULATE ACTION
+        // ================================================================
+        function onCalculate() {
+            // Hide previous error
+            calcErrorEl.style.display = 'none';
+            calcErrorEl.textContent = '';
+
+            const monthly = Number(monthlyAmountEl.value);
+            const years = Number(periodYearsEl.value);
+            const ret = Number(expectedReturnEl.value);
+            const infl = Number(inflationRateEl.value);
+            const step = Number(stepUpPercentEl.value);
+
+            // Validation (identical to React version)
+            if (!(monthly > 0)) {
+                calcErrorEl.textContent = 'Monthly amount must be greater than 0.';
+                calcErrorEl.style.display = 'block';
+                return;
+            }
+            if (!(years > 0)) {
+                calcErrorEl.textContent = 'Period (years) must be greater than 0.';
+                calcErrorEl.style.display = 'block';
+                return;
+            }
+            if (!(ret >= 0)) {
+                calcErrorEl.textContent = 'Expected return cannot be negative.';
+                calcErrorEl.style.display = 'block';
+                return;
+            }
+
+            // Disable button during calculation (simulate async)
+            calculateBtn.disabled = true;
+            calculateBtn.textContent = 'Calculating...';
+
+            // Use setTimeout to let UI update (mimics async)
+            setTimeout(() => {
+                try {
+                    const result = calculateSIP(monthly, years, ret, infl, step);
+                    resultData = result;
+                    renderResults(result);
+                    calcErrorEl.style.display = 'none';
+                } catch (err) {
+                    calcErrorEl.textContent = err?.message || 'Unable to calculate SIP';
+                    calcErrorEl.style.display = 'block';
+                    resultData = null;
+                    renderResults(null);
+                } finally {
+                    calculateBtn.disabled = false;
+                    calculateBtn.textContent = 'Calculate';
+                }
+            }, 150);
+        }
+
+        // ================================================================
+        //  INIT
+        // ================================================================
+        function init() {
+            // Set initial fund
+            const initialFund = FUNDS[0];
+            if (initialFund) {
+                selectedFundType = initialFund.type;
+                expectedReturnEl.value = initialFund.expected_return;
+            }
+
+            renderFundTabs();
+            renderFundDetails();
+            renderResults(null);
+
+            // Event listeners
+            calculateBtn.addEventListener('click', onCalculate);
+
+            // Enter key support on inputs
+            const inputs = [monthlyAmountEl, periodYearsEl, expectedReturnEl, inflationRateEl, stepUpPercentEl];
+            inputs.forEach((el) => {
+                el.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        onCalculate();
+                    }
+                });
+            });
+        }
+
+        // Run on DOM ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+    </script>
+
+</body>
+</html>
